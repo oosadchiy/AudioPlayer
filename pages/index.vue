@@ -6,6 +6,12 @@
   </audio>
 
   <div class="slidercontainer">
+
+    <div class="div-button-control">
+      <button id="btnPlayPause" @click="PlayPause" :class="btnPlayClass" title="Начать воспроизведение"></button>
+      <button id="btnStop" @click="stop" class="btn-stop" title="Остановить воспроизведение"></button>
+    </div>
+
     <input type="range" id="trackBarDuration" min="0"
            v-model="currentTime"
            @change="onChangeDuration"
@@ -18,19 +24,18 @@
       <button id="mute-btn" @click="mute" :class="btnMuteClass" title="Без звука"></button>
     </div>
 
-    <div class="div-button-control">
-      <!-- <div>{{durationStr}}</div> -->
+    <div class="duration-info">{{currentTimeFormatted}} / {{durationFormatted}}</div>
 
-      <button id="btnPlayPause" @click="PlayPause" :class="btnPlayClass" title="Начать воспроизведение"></button>
-      <button id="btnStop" @click="stop" class="btn-stop" title="Остановить воспроизведение"></button>
-    </div>
   </div>
 
 </div>
 </template>
 
 <script>
-//import Logo from '~/components/Logo.vue'
+
+// var fs = window.fs; //require('fs');
+// var mm = require('musicmetadata');
+//var fileurl = "D:/projects/web/AudioPlayer/assets/mp3/testaudio.mp3 ";
 
 var volumeDefault = 0.2;
 
@@ -41,7 +46,7 @@ export default {
       lastVolume: volumeDefault, //player.volume,
       currentTime: 0.0,
       isPlaying: false,
-      durationStr: '0'
+      durationFormatted: '0'
     }
   },
   methods: {
@@ -91,8 +96,10 @@ export default {
       this.currentTime = player.currentTime;
     },
     onLoadedData() {
-      this.durationStr = Math.floor(player.duration/60) + ':'
+      this.durationFormatted = Math.floor(player.duration/60) + ':'
                        + Math.floor(player.duration%60).toString().padStart(2, '0');
+
+      trackBarDuration.max = Math.floor(player.duration);
     }
   },
   computed: {
@@ -103,18 +110,22 @@ export default {
     btnMuteClass: function () {
       return (this.volume != 0 ? "btn-volume" : "btn-muted");
     },
+
+    currentTimeFormatted: function() {
+      return Math.floor(this.currentTime/60) + ':'
+                       + Math.floor(this.currentTime%60).toString().padStart(2, '0');
+    }
   },
   mounted() {
     player.volume = this.volume;
-    //this.duration = player.duration;
   }
 }
 </script>
 
 <style lang="scss">
 
-$thumb-width: 7px;
-$thumb-height: 7px;
+$thumb-width: 14px;
+$thumb-height: 14px;
 
 @mixin slider-thumb {
   -webkit-appearance: none;
@@ -122,7 +133,7 @@ $thumb-height: 7px;
   width: $thumb-width;
   height: $thumb-height;
   border-radius: 50%;
-  background: rgb(209, 213, 214); //#d3d3d3;
+  background: rgb(128,128,128); //rgb(209, 213, 214);
 }
 
 @mixin btn-volume {
@@ -132,12 +143,12 @@ $thumb-height: 7px;
   vertical-align: middle;
 }
 
-#rootdiv {
-  //border: 1px solid;
-  // display: flex;
-  // justify-content: center;
-  //text-align: center
-}
+// #rootdiv {
+//   border: 1px solid;
+//   display: flex;
+//   justify-content: center;
+//   text-align: center
+// }
 
 button {
   border: 0;
@@ -151,8 +162,8 @@ button:focus {
 }
 
 input[type="range"] {
-  background: rgb(64,64,66); //#000;
-  height: $thumb-height;
+  background: rgb(64,64,66);
+  height: 5px;
   cursor: pointer;
 }
 
@@ -227,19 +238,21 @@ input[type="range"] {
 
 .slider-volume::-webkit-slider-thumb {
   @include slider-thumb;
-
   /* box-shadow: makelongshadow(#e33d44, $shadow-size); */
   //box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
 }
 
-// .slider-volume::-webkit-slider-thumb {
-//
+// ::-ms-fill-lower {
+//   background: #d3d3d3;
+//   height: $thumb-height;
 // }
 
-::-ms-fill-lower {
-  background: #d3d3d3;
-  width: auto;
-  height: $thumb-height;
+.duration-info {
+  margin-top: 5px;
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  font-size: 12px;
 }
+
 
 </style>
