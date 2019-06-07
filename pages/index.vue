@@ -1,21 +1,28 @@
 <template>
-<div>
+<div id="rootdiv">
 
-  <audio id="player" @timeupdate="onTimeUpdate">
+  <audio id="player" @timeupdate="onTimeUpdate" @loadeddata="onLoadedData">
     <source src="../assets/mp3/testaudio.mp3" type="audio/mpeg">
   </audio>
 
-  <div id="mydiv"></div>
   <div class="slidercontainer">
-    <input type="range" id="trackBarDuration" min="0" v-model="currentTime" @change="onChangeDuration" class="slider-duration" step="1"/>
+    <input type="range" id="trackBarDuration" min="0"
+           v-model="currentTime"
+           @change="onChangeDuration"
+           class="slider-duration" step="1"/>
     <div class="div-volume">
-      <input type="range" id="trackBarVolume" min="0" max="1" v-model="volume" @change="onChangeVolume" class="slider-volume" step="0.01"/>
-      <button id="mute-btn" @click="mute" class="btn-control" :class="btnMuteClass" title="Без звука"></button>
+      <input type="range" id="trackBarVolume" min="0" max="1" v-model="volume"
+             @change="onChangeVolume"
+             class="slider-volume"
+             step="0.01"/>
+      <button id="mute-btn" @click="mute" :class="btnMuteClass" title="Без звука"></button>
     </div>
 
     <div class="div-button-control">
-      <button id="play-btn" @click="PlayPause" :class="btnPlayClass" title="Начать воспроизведение"></button>
-      <button id="play-btn" @click="stop" class="btn-stop" title="Остановить воспроизведение"></button>
+      <!-- <div>{{durationStr}}</div> -->
+
+      <button id="btnPlayPause" @click="PlayPause" :class="btnPlayClass" title="Начать воспроизведение"></button>
+      <button id="btnStop" @click="stop" class="btn-stop" title="Остановить воспроизведение"></button>
     </div>
   </div>
 
@@ -25,13 +32,16 @@
 <script>
 //import Logo from '~/components/Logo.vue'
 
+var volumeDefault = 0.2;
+
 export default {
   data() {
     return {
-      volume: 0.5, //player.volume,
-      lastVolume: 0.5, //player.volume,
+      volume: volumeDefault, //player.volume,
+      lastVolume: volumeDefault, //player.volume,
       currentTime: 0.0,
-      isPlaying: false
+      isPlaying: false,
+      durationStr: '0'
     }
   },
   methods: {
@@ -56,17 +66,18 @@ export default {
     },
 
     PlayPause() {
-      trackBarDuration.max = player.duration;
 
       if (player.paused)
       {
         player.play();
         this.isPlaying = true;
+        btnPlayPause.title = "Приостановить воспроизведение";
       }
       else
       {
         player.pause();
         this.isPlaying = false;
+        btnPlayPause.title = "Продолжить воспроизведение";
       }
     },
 
@@ -74,9 +85,14 @@ export default {
       player.pause();
       player.currentTime = 0;
       this.isPlaying = false;
+      btnPlayPause.title = "Начать воспроизведение";
     },
     onTimeUpdate() {
       this.currentTime = player.currentTime;
+    },
+    onLoadedData() {
+      this.durationStr = Math.floor(player.duration/60) + ':'
+                       + Math.floor(player.duration%60).toString().padStart(2, '0');
     }
   },
   computed: {
@@ -86,24 +102,66 @@ export default {
 
     btnMuteClass: function () {
       return (this.volume != 0 ? "btn-volume" : "btn-muted");
-    }
+    },
+  },
+  mounted() {
+    player.volume = this.volume;
+    //this.duration = player.duration;
   }
-
 }
 </script>
 
-<style>
+<style lang="scss">
+
+$thumb-width: 7px;
+$thumb-height: 7px;
+
+@mixin slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: $thumb-width;
+  height: $thumb-height;
+  border-radius: 50%;
+  background: rgb(209, 213, 214); //#d3d3d3;
+}
+
+@mixin btn-volume {
+  background-position: center;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+}
+
+#rootdiv {
+  //border: 1px solid;
+  // display: flex;
+  // justify-content: center;
+  //text-align: center
+}
 
 button {
   border: 0;
-  background-position: center;
-  width: 24px;
-  height: 24px;
+  width: 37px;
+  height: 37px;
+  cursor: pointer;
 }
 
-#app {
-  width:100%,auto;
-  background-color: rgb(67, 108, 160);
+button:focus {
+  outline:none;
+}
+
+input[type="range"] {
+  background: rgb(64,64,66); //#000;
+  height: $thumb-height;
+  cursor: pointer;
+}
+
+.slidercontainer {
+  margin-bottom: 30px;
+  padding: 20px;
+  display: inline-block;
+  border-radius: 8px;
+  background-color: rgb(231, 235, 238);
 }
 
 .div-volume {
@@ -112,72 +170,76 @@ button {
 }
 
 .btn-play {
-  background:url(../static/img/play.png) no-repeat transparent;
+  background:url(../assets/img/play.png) no-repeat transparent;
+  background-position: center;
 }
 
 .btn-pause {
-  background:url(../static/img/pause.png) no-repeat transparent;
+  background:url(../assets/img/pause.png) no-repeat transparent;
+  background-position: center;
 }
 
 .btn-stop {
-  background:url(../static/img/stop.png) no-repeat transparent;
+  background:url(../assets/img/stop.png) no-repeat transparent;
+  background-position: center;
+  width: 32px;
+  height: 32px;
 }
 
 .btn-volume {
-  background:url(../static/img/volume.png) no-repeat transparent;
+  background:url(../assets/img/volume.png) no-repeat transparent;
+  @include btn-volume;
 }
 
 .btn-muted {
-  background:url(../static/img/muted.png) no-repeat transparent;
+  background:url(../assets/img/muted.png) no-repeat transparent;
+  @include btn-volume;
 }
 
 .div-button-control {
   margin-top: 10px;
 }
 
-.slidercontainer {
-  margin-bottom: 30px;
-}
-
 .slider-duration {
   -webkit-appearance: none;
   appearance: none;
   width: 300px;
-  height: 5px;
-  border-radius: 5px;
-  background: #d3d3d3; /*#e33d44;*/
+  //height: 10px;
+  border-radius:10px;
   outline: none;
   opacity: 0.7;
 }
 
 .slider-duration::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 7px;
-  height: 15px;
-  background: #000;
-  cursor: pointer;
+  @include slider-thumb;
 }
 
 .slider-volume {
   -webkit-appearance: none;
   appearance: none;
   width: 70px;
-  height: 5px;
-  border-radius: 5px;
-  background: #d3d3d3; /*#e33d44;*/
+  border-radius: 10px;
   outline: none;
   opacity: 0.7;
+  padding: 0px;
+  border: 0;
 }
 
 .slider-volume::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #4CAF50;
-  cursor: pointer;
+  @include slider-thumb;
+
   /* box-shadow: makelongshadow(#e33d44, $shadow-size); */
+  //box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
 }
+
+// .slider-volume::-webkit-slider-thumb {
+//
+// }
+
+::-ms-fill-lower {
+  background: #d3d3d3;
+  width: auto;
+  height: $thumb-height;
+}
+
 </style>
