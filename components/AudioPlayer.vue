@@ -58,8 +58,8 @@
       Queue
     </div>
 
-    <ul class="track-list">
-      <li v-for="(track, index) in trackList" @click="selectTrack(index)" title="Click to start playing">
+    <ul class="track-list" id="ulTrackList">
+      <li v-for="(track, index) in trackList" @click="selectTrack(index)" title="Click to start playing" :id="'liTrack'+index">
         <img class="cover-img" :src="require('../assets/img/cover/'+track.img)"/>
         <div class="inline">
           <div class="track-title">{{track.title}}</div>
@@ -77,11 +77,11 @@
 
 const {Howl, Howler} = require('howler');
 
-function updateCurrentPosition() {
-  //currentTime = Math.floor(sound.seek());
-  // var data = comp.data();
-  // console.log(data.currentTime);
-};
+// function updateCurrentPosition() {
+//   //currentTime = Math.floor(sound.seek());
+//   // var data = comp.data();
+//   // console.log(data.currentTime);
+// };
 
 var volumeDefault = 0.55;
 
@@ -157,15 +157,6 @@ export default {
                              + Math.floor(duration%60).toString().padStart(2, '0');
 
             trackBarDuration.max = Math.floor(duration);
-          },
-          onend: function () {
-
-          },
-          onseek: function () {
-
-          },
-          onplay: function () {
-            updateCurrentPosition();
           }
         });
 
@@ -194,8 +185,9 @@ export default {
         sound.play();
         this.isPlaying = true;
         btnPlayPause.title = "Pause";
-      }
 
+        //this.updateCurrentPosition();
+      }
     },
 
     moveToPrev() {
@@ -219,6 +211,9 @@ export default {
     },
 
     selectTrack(index) {
+      if (this.trackIndex == index)
+        return;
+
       this.trackIndex = index;
 
       if (this.currentTrack != null && this.currentTrack.sound != null)
@@ -227,6 +222,22 @@ export default {
       this.currentTime = 0;
 
       this.PlayPause();
+
+      this.highlightTrack(index);
+    },
+
+    highlightTrack(index) {
+      var ul = document.getElementById("ulTrackList");
+      var items = ul.getElementsByTagName("li");
+      for (var i = 0; i < items.length; ++i) {
+
+        var bgColor =  "#fff";
+
+        if (items[i].id == 'liTrack'+index)
+          bgColor = "#D7DEF4"; // "#E3E3E3";
+
+        items[i].style.backgroundColor = bgColor;
+      }
     },
 
     mute() {
@@ -265,8 +276,13 @@ export default {
     // },
 
     // updateCurrentPosition() {
-    //   console.log('updateCurrentPosition');
+    //   if (this.currentTrack == null || this.currentTrack.sound == null)
+    //     return;
+    //
+    //   var time = this.currentTrack.sound.seek();
+    //   console.log(this.currentTrack.sound);
     // }
+
   },
   computed: {
     btnPlayClass: function () {
@@ -297,14 +313,10 @@ export default {
                          + Math.floor(duration%60).toString().padStart(2, '0');
 
         trackBarDuration.max = Math.floor(duration);
-      },
-      onseek: function () {
-
-      },
-      onplay: function () {
-        updateCurrentPosition();
       }
     });
+
+    this.highlightTrack(0);
   }
 };
 
@@ -406,6 +418,7 @@ input[type="range"] {
   width: 300px;
   height: 500px;
   background-color: #fff;
+  box-shadow: 0px 0px 10px #A69CB5;
 }
 
 .div-volume {
@@ -416,18 +429,16 @@ input[type="range"] {
 .btn-play {
   background:url(../assets/img/play.png) no-repeat transparent;
   background-position: center;
+  //border: 1px solid;
+  border-radius: 50%;
+  box-shadow: 0px 10px 10px 1px #ADA7C4;
 }
 
 .btn-pause {
   background:url(../assets/img/pause.png) no-repeat transparent;
   background-position: center;
-}
-
-.btn-stop {
-  background:url(../assets/img/stop.png) no-repeat transparent;
-  background-position: center;
-  width: 32px;
-  height: 32px;
+  border-radius: 50%;
+  box-shadow: 0px 5px 8px 2px #ADA7C4;
 }
 
 .btn-volume {
@@ -483,7 +494,6 @@ input[type="range"] {
 .slider-volume::-webkit-slider-thumb {
   @include slider-thumb;
   /* box-shadow: makelongshadow(#e33d44, $shadow-size); */
-  //box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
 }
 
 .track-time-info {
@@ -517,36 +527,38 @@ input[type="range"] {
     border: 0;
     background: #D7DEF4;
     height: 1px;
-    color: #D7DEF4;
   }
 }
 
 .track-title {
   font-size: 16px;
-  color: #82829C; // rgb(150, 153, 157);
+  color: rgb(66, 68, 69); // #82829C;
   font-weight: bold;
   //border: 1px solid;
 }
 
 .track-title-current {
   font-size: 20px;
+  margin-top: 15px;
 }
 
 .track-artist {
   font-size: 14px;
-  color: #B4C1DC; // rgb(150, 153, 157);
+  color: rgb(177, 181, 191); //#B4C1DC;
   font-weight: bold;
   //border: 1px solid;
 }
 
 .track-artist-current {
   font-size: 18px;
+  margin-bottom: 5px;
 }
 
 .cover-box {
   //border: 1px solid;
   text-align: center;
   margin-bottom: 5px;
+  box-shadow: 0px 0px 10px #ADA7C4;
 }
 
 .track-info-current {
@@ -574,7 +586,7 @@ input[type="range"] {
   text-align: center;
   font-size: 20px;
   font-weight: bold;
-  color: #82829C;
+  color: #82829C; // rgb(66, 68, 69);
 }
 
 .inline {
