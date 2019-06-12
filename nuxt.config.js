@@ -48,13 +48,6 @@ export default {
     /*
     ** You can extend webpack config here
     */
-    loaders: {
-      vue: {
-        transformAssetUrls: {
-          audio: 'src',
-        },
-      },
-    },
 
     extend(config, ctx) {
       config.module.rules.push({
@@ -64,6 +57,19 @@ export default {
           name: '[path][name].[ext]',
         },
       })
+
+      // config.node = {
+      //     fs: "empty"
+      // }
+    },
+
+    loaders: {
+      vue: {
+        transformAssetUrls: {
+          'audio': 'src'
+        }
+      }
     }
+
   }
 }
