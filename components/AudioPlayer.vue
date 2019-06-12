@@ -523,7 +523,7 @@ input[type="range"] {
   }
 
   hr {
-    margin-top: 5px;
+    margin-top: 0; //5px;
     border: 0;
     background: #D7DEF4;
     height: 1px;
@@ -577,6 +577,8 @@ input[type="range"] {
   width: 50px;
   height: 50px;
   object-fit: contain;
+  margin: 0;
+  padding: 0;
 }
 
 .now-playing-header {
