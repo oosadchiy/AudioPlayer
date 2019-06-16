@@ -9,9 +9,9 @@
 
       <div class="track-info-current">
         <template v-if="currentTrack != null">
-          <div class="cover-box">
-            <img id="coverImgCurrent" class="cover-img-current" :src="require('../assets/img/cover/'+this.currentTrack.img)"/>
-          </div>
+
+          <img id="coverImgCurrent" class="cover-img-current" :src="require('../assets/img/cover/'+this.currentTrack.img)"/>
+
           <div class="track-title track-title-current">{{this.currentTrack.title }}</div>
           <div class="track-artist track-artist-current">{{this.currentTrack.artist }}</div>
         </template>
@@ -43,7 +43,7 @@
 
     <div class="div-button-control">
       <button id="btnPrev" @click="moveToPrev(trackIndex)" class="btn-prev" title="Previous track"></button>
-      <div id="divLoading"></div>
+      <!-- <div id="divLoading"></div> -->
       <button id="btnPlayPause"
               @click="PlayPause"
               :class="btnPlayClass"
@@ -53,7 +53,7 @@
 
   </div>
 
-  <div class="container">
+  <div class="container container-queue">
     <div class="now-playing-header">
       Queue
     </div>
@@ -68,6 +68,7 @@
         <hr/>
       </li>
     </ul>
+
   </div>
 
 </div>
@@ -77,13 +78,7 @@
 
 const {Howl, Howler} = require('howler');
 
-// function updateCurrentPosition() {
-//   //currentTime = Math.floor(sound.seek());
-//   // var data = comp.data();
-//   // console.log(data.currentTime);
-// };
-
-var volumeDefault = 0.55;
+var volumeDefault = 0.1;
 
 export default {
   data() {
@@ -149,8 +144,8 @@ export default {
           src: [require('../assets/mp3/'+track.file)],
           html5: true,
           onload: function() {
-            divLoading.style.display = 'none';
-            btnPlayPause.style.display = 'inline-block';
+            // divLoading.style.display = 'none';
+            // btnPlayPause.style.display = 'inline-block';
 
             var duration  = sound.duration();
             divDuration.innerHTML = Math.floor(duration/60) + ':'
@@ -165,14 +160,14 @@ export default {
 
       this.currentTrack = track;
 
-      if (sound.state() == 'loaded') {
-        btnPlayPause.style.display = 'inline-block';
-        divLoading.style.display = 'none';
-      }
-      else {
-        btnPlayPause.style.display = 'none';
-        divLoading.style.display = 'inline-block';
-      }
+      // if (sound.state() == 'loaded') {
+      //   btnPlayPause.style.display = 'inline-block';
+      //   divLoading.style.display = 'none';
+      // }
+      // else {
+      //   btnPlayPause.style.display = 'none';
+      //   divLoading.style.display = 'inline-block';
+      // }
 
       if (sound.playing())
       {
@@ -231,10 +226,10 @@ export default {
       var items = ul.getElementsByTagName("li");
       for (var i = 0; i < items.length; ++i) {
 
-        var bgColor =  "#fff";
+        var bgColor = "#fff";
 
         if (items[i].id == 'liTrack'+index)
-          bgColor = "#D7DEF4"; // "#E3E3E3";
+          bgColor = "#DFDAE1"; //"#E1E1E1";
 
         items[i].style.backgroundColor = bgColor;
       }
@@ -299,14 +294,15 @@ export default {
     }
   },
   mounted() {
+    Howler.volume(volumeDefault);
     this.currentTrack = this.trackList[0];
 
     var sound = new Howl({
       src: [require('../assets/mp3/'+this.currentTrack.file)],
       html5: true,
       onload: function() {
-        divLoading.style.display = 'none';
-        btnPlayPause.style.display = 'inline-block';
+        // divLoading.style.display = 'none';
+        // btnPlayPause.style.display = 'inline-block';
 
         var duration  = sound.duration();
         divDuration.innerHTML = Math.floor(duration/60) + ':'
@@ -328,16 +324,7 @@ $thumb-width: 14px;
 $thumb-height: 14px;
 
 body {
-  font-family: Geneva;
-}
-
-@mixin slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: $thumb-width;
-  height: $thumb-height;
-  border-radius: 50%;
-  background: rgb(128,128,128); //rgb(209, 213, 214);
+  font-family: "Calibri", sans-serif;
 }
 
 @mixin btn-volume {
@@ -350,15 +337,15 @@ body {
   float: right;
 }
 
-#divLoading {
-  width: 61px;
-  height: 61px;
-  background-color: #000; //#fff;
-  border-radius: 100%;
-  -webkit-animation: sk-scaleout 1.0s infinite ease-in-out;
-  animation: sk-scaleout 1s infinite ease-in-out;
-  display: none; // inline-block;
-}
+// #divLoading {
+//   width: 64px;
+//   height: 64px;
+//   background-color: #000;
+//   border-radius: 100%;
+//   -webkit-animation: sk-scaleout 1.0s infinite ease-in-out;
+//   animation: sk-scaleout 1s infinite ease-in-out;
+//   display: none; // inline-block;
+// }
 
 // @-webkit-keyframes sk-scaleout {
 //   0% { -webkit-transform: scale(0) }
@@ -368,21 +355,21 @@ body {
 //   }
 // }
 
-@keyframes sk-scaleout {
-  0% {
-    -webkit-transform: scale(0);
-    transform: scale(0);
-  } 100% {
-    -webkit-transform: scale(1.0);
-    transform: scale(1.0);
-    opacity: 0;
-  }
-}
+// @keyframes sk-scaleout {
+//   0% {
+//     -webkit-transform: scale(0);
+//     transform: scale(0);
+//   } 100% {
+//     -webkit-transform: scale(1.0);
+//     transform: scale(1.0);
+//     opacity: 0;
+//   }
+// }
 
 button {
   border: 0;
-  width: 61px;
-  height: 61px;
+  width: 64px;
+  height: 64px;
   cursor: pointer;
 }
 
@@ -390,15 +377,7 @@ button:focus {
   outline:none;
 }
 
-input[type="range"] {
-  background: #82829C; //#D7DEF4;
-  height: 2px;
-  outline:none;
-  cursor: pointer;
-}
-
 .maincontainer {
-  //border: 1px solid;
   width:100%;
   height:100%;
   position:fixed;
@@ -407,38 +386,91 @@ input[type="range"] {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #D7DEED;
+  background: linear-gradient(90deg, #CF81BE, #E77F8E);
+  //border: 1px solid;
 }
 
 .container {
-  padding: 20px;
+  padding: 10px 20px;
   margin-right: 50px;
   display: inline-block;
   border-radius: 10px;
-  width: 300px;
-  height: 500px;
+  width: 350px;
+  height: 600px;
   background-color: #fff;
-  box-shadow: 0px 0px 10px #A69CB5;
+  box-shadow: 0px 20px 20px -5px #C27194;
+  //border: 1px solid;
+}
+
+.container-queue {
+  padding: 10px 0;
+}
+
+@mixin slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0px; //$thumb-width;
+  height: $thumb-height;
+  border-radius: 50%;
+  background: #82829C;
+  box-shadow: -300px 0 0 300px #ea7169;
+}
+
+input[type="range"] {
+  overflow: hidden;
+  -webkit-appearance: none;
+  background: #E1E1E1;
+  height: 4px;
+  outline:none;
+  cursor: pointer;
+}
+
+.slider-duration {
+  width: 100%;
+  border-radius:15px;
+  opacity: 0.7;
+}
+
+.slider-duration::-webkit-slider-thumb {
+  @include slider-thumb;
+  width: 0;
+  height: 8px;
+}
+
+.slider-volume {
+  -webkit-appearance: none;
+  width: 90%;
+  border-radius: 15px;
+  outline: none;
+  opacity: 0.7;
+  border: 0;
+}
+
+.slider-volume::-webkit-slider-thumb {
+  @include slider-thumb;
 }
 
 .div-volume {
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  //border: 1px solid;
 }
+
+$play-shadow: 0px 20px 30px -5px #F0A5AB;
 
 .btn-play {
   background:url(../assets/img/play.png) no-repeat transparent;
   background-position: center;
-  //border: 1px solid;
   border-radius: 50%;
-  box-shadow: 0px 10px 10px 1px #ADA7C4;
+  box-shadow: $play-shadow;
+  //border: 1px solid;
 }
 
 .btn-pause {
   background:url(../assets/img/pause.png) no-repeat transparent;
   background-position: center;
   border-radius: 50%;
-  box-shadow: 0px 5px 8px 2px #ADA7C4;
+  box-shadow: $play-shadow;
 }
 
 .btn-volume {
@@ -462,47 +494,15 @@ input[type="range"] {
 }
 
 .div-button-control {
-  margin-top: 30px;
   text-align: center;
-}
-
-.slider-duration {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  border-radius:15px;
-  opacity: 0.7;
-}
-
-.slider-duration::-webkit-slider-thumb {
-  @include slider-thumb;
-  width: 8px;
-  height: 8px;
-}
-
-.slider-volume {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 90%;
-  border-radius: 15px;
-  outline: none;
-  opacity: 0.7;
-  padding: 0px;
-  border: 0;
-}
-
-.slider-volume::-webkit-slider-thumb {
-  @include slider-thumb;
-  /* box-shadow: makelongshadow(#e33d44, $shadow-size); */
 }
 
 .track-time-info {
   margin-top: 1px;
-  //margin-bottom: 5px;
   font-weight: bold;
-  font-size: 10px;
+  font-size: 12px;
   display: inline-block;
-  color: #82829C;
+  color: #BDC1C4;
   vertical-align: top;
 }
 
@@ -512,93 +512,93 @@ input[type="range"] {
 
 .track-list {
   list-style-type: none;
-  //letter-spacing: 0.5px;
   margin-left: 0;
+  margin-top: 30px;
   padding-left: 0;
+  //border: 1px solid;
 
   li {
-    margin-bottom: 10px;
     cursor: pointer;
-    //background: #D7DEF4;
+    //border: 1px solid;
   }
 
   hr {
-    margin-top: 0; //5px;
+    margin: 0 15px;
     border: 0;
-    background: #D7DEF4;
+    background: #E1E1E1;
     height: 1px;
   }
 }
 
 .track-title {
-  font-size: 16px;
-  color: rgb(66, 68, 69); // #82829C;
-  font-weight: bold;
-  //border: 1px solid;
+  font-size: 12pt;
+  color: rgb(65, 67, 68);
+  font-weight: 600;
 }
 
 .track-title-current {
-  font-size: 20px;
-  margin-top: 15px;
+  font-size: 14pt;
+  margin-top: 45px;
+  //border: 1px solid;
 }
 
 .track-artist {
-  font-size: 14px;
-  color: rgb(177, 181, 191); //#B4C1DC;
+  font-size: 11pt;
+  color: rgb(170, 175, 179);
   font-weight: bold;
   //border: 1px solid;
 }
 
 .track-artist-current {
-  font-size: 18px;
-  margin-bottom: 5px;
-}
-
-.cover-box {
-  //border: 1px solid;
-  text-align: center;
-  margin-bottom: 5px;
-  box-shadow: 0px 0px 10px #ADA7C4;
+  font-size: 13pt;
+  margin-bottom: 15px;
 }
 
 .track-info-current {
-  //border: 1px solid;
   text-align: center;
-  margin-top: 10px;
+  margin-top: 30px;
+  //border: 1px solid;
 }
 
 .cover-img-current {
   width: 200px;
   height: 200px;
   object-fit: contain;
+  box-shadow: 0px 20px 30px -5px #DAABA1;
+  border-radius: 8px;
+  //border: 1px solid;
 }
 
 .cover-img {
   width: 50px;
   height: 50px;
   object-fit: contain;
-  margin: 0;
-  padding: 0;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 15px;
+  margin-right: 8px;
+  border-radius: 8px;
+  vertical-align: middle;
+  //border: 1px solid;
 }
 
 .now-playing-header {
-  //height: 50px;
-  //border: 1px solid;
-  padding-bottom: 10px;
   text-align: center;
   font-size: 20px;
   font-weight: bold;
-  color: #82829C; // rgb(66, 68, 69);
+  color: rgb(65, 67, 68);
+  //border: 1px solid;
 }
 
 .inline {
   display: inline-block;
-  vertical-align: top;
-  //border: 1px solid;
+  vertical-align: middle;
+  margin: 0px;
 }
 
 .top3 {
   margin-top: 3px;
+  padding: 0;
 }
 
 </style>
