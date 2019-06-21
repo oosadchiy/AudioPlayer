@@ -319,7 +319,6 @@ export default {
 </script>
 
 <style lang="scss">
-
 $thumb-width: 14px;
 $thumb-height: 14px;
 
